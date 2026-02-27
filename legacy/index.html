@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plagiarism Detector | Advanced Analysis</title>
+    <meta name="description" content="Professional Plagiarism Detection System using advanced algorithms.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="navbar glass-panel">
+            <div class="logo">
+                <i class="fa-solid fa-magnifying-glass-chart"></i>
+                <span>PlagDetect<span class="highlight">.ai</span></span>
+            </div>
+            <div class="nav-controls">
+                <button id="theme-toggle" class="icon-btn" aria-label="Toggle Dark Mode">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <button id="history-btn" class="icon-btn" aria-label="View History">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="hero-section">
+                <h1>Advanced Plagiarism Detection</h1>
+            </header>
+
+            <!-- Input Area -->
+            <div class="comparison-container">
+                <!-- Source Document -->
+                <div class="input-card glass-panel">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-file-lines"></i> Source Text <span class="format-badge">.txt</span>
+                        </h2>
+                        <div class="file-upload-wrapper">
+                            <input type="file" id="source-file" hidden accept=".txt">
+                            <label for="source-file" class="file-btn"><i class="fa-solid fa-upload"></i> Upload
+                                File</label>
+                        </div>
+                    </div>
+                    <p
+                        style="font-size: 0.75rem; color: var(--text-muted); margin-top: -0.5rem; margin-bottom: 0.5rem; text-align: right;">
+                        *MVP: .txt files only</p>
+                    <textarea id="source-text" placeholder="Paste original text here..."></textarea>
+                    <div class="char-count">0 words</div>
+                </div>
+
+                <!-- Suspicious Document -->
+                <div class="input-card glass-panel">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-file-circle-question"></i> Suspicious Text <span
+                                class="format-badge">.txt</span></h2>
+                        <div class="file-upload-wrapper">
+                            <input type="file" id="suspect-file" hidden accept=".txt">
+                            <label for="suspect-file" class="file-btn"><i class="fa-solid fa-upload"></i> Upload
+                                File</label>
+                        </div>
+                    </div>
+                    <p
+                        style="font-size: 0.75rem; color: var(--text-muted); margin-top: -0.5rem; margin-bottom: 0.5rem; text-align: right;">
+                        *MVP: .txt files only</p>
+                    <textarea id="suspect-text" placeholder="Paste text to check here..."></textarea>
+                    <div class="char-count">0 words</div>
+                </div>
+            </div>
+
+            <!-- Action Area -->
+            <div class="action-area">
+                <div class="settings-panel glass-panel">
+                    <div class="settings-content-wrapper">
+                        <!-- Left: Inputs -->
+                        <div class="settings-left">
+                            <h3>Detection Settings</h3>
+
+                            <!-- Scan Density -->
+                            <div class="setting-group">
+                                <label>Scan Density</label>
+                                <div class="hybrid-control">
+                                    <div class="btn-group full-width">
+                                        <button class="option-btn" data-val="8">Fast</button>
+                                        <button class="option-btn active" data-val="5">Balanced</button>
+                                        <button class="option-btn" data-val="3">Deep</button>
+                                    </div>
+                                </div>
+                                <div class="helper-text">Deep scan finds more matches but takes longer.</div>
+                            </div>
+
+                            <!-- Minimum Match Length -->
+                            <div class="setting-group">
+                                <label>Minimum Match Length</label>
+                                <div class="hybrid-control">
+                                    <div class="btn-group">
+                                        <button class="option-btn active" id="prec-normal" data-k="3">Standard</button>
+                                        <button class="option-btn" id="prec-strict" data-k="5">Strict</button>
+                                    </div>
+                                    <div class="input-wrapper">
+                                        <input type="number" id="k-input" min="2" max="8" value="3" class="sm-input">
+                                        <span class="unit">words</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Actions -->
+                        <div class="settings-right">
+                            <button id="check-btn" class="primary-btn pulse-anim full-width-btn">
+                                <i class="fa-solid fa-bolt"></i> Check for Plagiarism
+                            </button>
+                            <button id="clear-btn" class="secondary-btn full-width-btn">
+                                <i class="fa-solid fa-trash"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section (Hidden by default) -->
+            <div id="results-section" class="results-section hidden">
+                <div class="stats-grid">
+                    <div class="stat-card glass-panel">
+                        <div class="stat-icon"><i class="fa-solid fa-percent"></i></div>
+                        <div class="stat-info">
+                            <h3>Similarity Score</h3>
+                            <span class="stat-value" id="score-value">0%</span>
+                        </div>
+                        <canvas id="similarity-chart" width="50" height="50"></canvas>
+                    </div>
+                    <div class="stat-card glass-panel">
+                        <div class="stat-icon"><i class="fa-solid fa-stopwatch"></i></div>
+                        <div class="stat-info">
+                            <h3>Analysis Time</h3>
+                            <span class="stat-value" id="time-value">0ms</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-panel">
+                        <div class="stat-icon"><i class="fa-solid fa-layer-group"></i></div>
+                        <div class="stat-info">
+                            <h3>Matches Found</h3>
+                            <span class="stat-value" id="matches-value">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diff-viewer glass-panel">
+                    <div class="diff-header">
+                        <h3>Detailed Comparison</h3>
+                        <button id="export-pdf" class="sm-btn"><i class="fa-solid fa-file-pdf"></i> Export
+                            Report</button>
+                    </div>
+                    <div class="diff-body" id="diff-output">
+                        <!-- Dynamic Diff Content -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 PlagDetect.ai | Powered by Rolling Hash & Winnowing Algorithms</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <!-- PDF Generation Lib -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
